@@ -62,6 +62,8 @@
     <Compile Include="Forme\Projekt.Designer.cs">
       <DependentUpon>Projekt.cs</DependentUpon>
     </Compile>
+    <Compile Include="Klase\AsimetricniAlgoritam.cs" />
+    <Compile Include="Klase\SimetricniAlgoritam.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forme\NovaDatoteka.resx">
@@ -92,8 +94,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Klase\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
