@@ -63,6 +63,7 @@
       <DependentUpon>Projekt.cs</DependentUpon>
     </Compile>
     <Compile Include="Klase\AsimetricniAlgoritam.cs" />
+    <Compile Include="Klase\IzracunSazetka.cs" />
     <Compile Include="Klase\SimetricniAlgoritam.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

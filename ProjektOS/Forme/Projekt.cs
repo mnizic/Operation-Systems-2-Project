@@ -36,7 +36,7 @@ namespace ProjektOS
                 dialog.Filter = "Text files (*.txt)|*.txt";
                 dialog.DefaultExt = "txt";
 
-                if(dialog.ShowDialog() == DialogResult.OK)
+                if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     using (StreamReader reader = new StreamReader(dialog.OpenFile()))
                     {
@@ -46,8 +46,22 @@ namespace ProjektOS
             }
 
             otvoriDatotekuSadrzaj.Text = sadrzaj;
-        }
+            string sazetak = IzracunSazetka.ComputeSha256Hash(sadrzaj);
 
+            sazetakTextBox.Text = sazetak;
+            string sazetakDatoteka = Directory.GetCurrentDirectory() + @"\sazetak_poruke.txt";
+
+
+            if (File.Exists(sazetakDatoteka))
+            {
+                File.Delete(sazetakDatoteka);
+            }
+
+            using (StreamWriter sw = File.CreateText(sazetakDatoteka))
+            {
+                sw.WriteLine(sazetak);
+            }
+        }
         private void enkriptirajButton_Click(object sender, EventArgs e)
         {
             if(otvoriDatotekuSadrzaj.Text != "")
@@ -66,23 +80,37 @@ namespace ProjektOS
                         aesKey = aes.Key;
                     }
 
-                    string fileName = Directory.GetCurrentDirectory() + @"\tajni_kljuc.txt";
+                    string tajniKljucDatoteka = Directory.GetCurrentDirectory() + @"\tajni_kljuc.txt";
 
-                    if (File.Exists(fileName))
+                    if (File.Exists(tajniKljucDatoteka))
                     {
-                        File.Delete(fileName);
+                        File.Delete(tajniKljucDatoteka);
                     }
 
-                    using (StreamWriter sw = File.CreateText(fileName))
+                    using (StreamWriter sw = File.CreateText(tajniKljucDatoteka))
                     {
                         String kljuc = Convert.ToBase64String(aesKey);
                         sw.WriteLine(kljuc);
                     }
 
                     byte[] sadrzaj = SimetricniAlgoritam.Enkriptiraj(otvoriDatotekuSadrzaj.Text, aesKey, aesIV);
-                    enkriptiraniSadrzaj.Text += Convert.ToBase64String(sadrzaj);
-                    enkriptiraniSadrzaj.Text += "\n\n Inicijalizacijski Vektor:";
+                    enkriptiraniSadrzaj.Text += Convert.ToBase64String(sadrzaj) + " " + Environment.NewLine;
+                    enkriptiraniSadrzaj.Text += "Inicijalizacijski Vektor:";
                     enkriptiraniSadrzaj.Text += Convert.ToBase64String(aesIV);
+
+                    string spremiEnkriptirano = enkriptiraniSadrzaj.Text.ToString();
+
+                    string enkTekstDatoteka = Directory.GetCurrentDirectory() + @"\kriptirani_tekst.txt";
+
+                    if (File.Exists(enkTekstDatoteka))
+                    {
+                        File.Delete(enkTekstDatoteka);
+                    }
+
+                    using (StreamWriter sw = File.CreateText(enkTekstDatoteka))
+                    {
+                        sw.WriteLine(spremiEnkriptirano);
+                    }
                 }
                 else
                 {
@@ -114,7 +142,7 @@ namespace ProjektOS
                         sw.WriteLine(privatniKljuc);
                     }
 
-                    byte[] sadrzaj = AsimetricniAlgoritam.EncryptText(javniKljuc, javniKljuc);
+                    byte[] sadrzaj = AsimetricniAlgoritam.EncryptText(javniKljuc, otvoriDatotekuSadrzaj.Text);
                     enkriptiraniSadrzaj.Text = Convert.ToBase64String(sadrzaj);
                 }
             }
@@ -153,7 +181,20 @@ namespace ProjektOS
                 }
                 else
                 {
+                    string fileName = Directory.GetCurrentDirectory() + @"\privatni_kljuc.txt";
 
+                    if (!File.Exists(fileName))
+                    {
+                        MessageBox.Show("Ne postoji datoteka privatni_kljuc.txt!");
+                    }
+                    else
+                    {
+                        string privatniKljuc = File.ReadAllText(fileName);
+
+                        string enkriptiraniTekst = enkriptiraniSadrzaj.Text;
+
+                        dekriptiraniSadrzaj.Text = AsimetricniAlgoritam.DecryptData(privatniKljuc, enkriptiraniTekst);
+                    }
                 }
             }
             
