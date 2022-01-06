@@ -38,6 +38,7 @@ namespace ProjektOS
             this.dekriptirajButton = new System.Windows.Forms.Button();
             this.enkriptiraniSadrzaj = new System.Windows.Forms.TextBox();
             this.dekriptiraniSadrzaj = new System.Windows.Forms.TextBox();
+            this.sazetakTextBox = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // stvoriNovuDatotekuButton
@@ -116,7 +117,7 @@ namespace ProjektOS
             this.enkriptiraniSadrzaj.Location = new System.Drawing.Point(12, 106);
             this.enkriptiraniSadrzaj.Multiline = true;
             this.enkriptiraniSadrzaj.Name = "enkriptiraniSadrzaj";
-            this.enkriptiraniSadrzaj.Size = new System.Drawing.Size(266, 101);
+            this.enkriptiraniSadrzaj.Size = new System.Drawing.Size(365, 101);
             this.enkriptiraniSadrzaj.TabIndex = 7;
             // 
             // dekriptiraniSadrzaj
@@ -125,14 +126,24 @@ namespace ProjektOS
             this.dekriptiraniSadrzaj.Location = new System.Drawing.Point(12, 292);
             this.dekriptiraniSadrzaj.Multiline = true;
             this.dekriptiraniSadrzaj.Name = "dekriptiraniSadrzaj";
-            this.dekriptiraniSadrzaj.Size = new System.Drawing.Size(266, 101);
+            this.dekriptiraniSadrzaj.Size = new System.Drawing.Size(365, 101);
             this.dekriptiraniSadrzaj.TabIndex = 8;
+            // 
+            // sazetakTextBox
+            // 
+            this.sazetakTextBox.Enabled = false;
+            this.sazetakTextBox.Location = new System.Drawing.Point(383, 12);
+            this.sazetakTextBox.Multiline = true;
+            this.sazetakTextBox.Name = "sazetakTextBox";
+            this.sazetakTextBox.Size = new System.Drawing.Size(513, 32);
+            this.sazetakTextBox.TabIndex = 9;
             // 
             // Projekt
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(854, 450);
+            this.ClientSize = new System.Drawing.Size(904, 450);
+            this.Controls.Add(this.sazetakTextBox);
             this.Controls.Add(this.dekriptiraniSadrzaj);
             this.Controls.Add(this.enkriptiraniSadrzaj);
             this.Controls.Add(this.dekriptirajButton);
@@ -161,6 +172,7 @@ namespace ProjektOS
         private System.Windows.Forms.Button dekriptirajButton;
         private System.Windows.Forms.TextBox enkriptiraniSadrzaj;
         private System.Windows.Forms.TextBox dekriptiraniSadrzaj;
+        private System.Windows.Forms.TextBox sazetakTextBox;
     }
 }
 

@@ -24,11 +24,30 @@ namespace ProjektOS.Klase
                 rsa.FromXmlString(publicKey);
 
                 // Encrypt the data and store it in the encyptedData Array   
-                encryptedData = rsa.Encrypt(dataToEncrypt, true);
+                encryptedData = rsa.Encrypt(dataToEncrypt, false);
             }
 
             // Save the encypted data array into a file   
             return encryptedData;
+        }
+
+        public static string DecryptData(string privateKey, string text)
+        {
+            // read the encrypted bytes from the file   
+            byte[] dataToDecrypt = Convert.FromBase64String(text);
+
+            // Create an array to store the decrypted data in it   
+            byte[] decryptedData;
+            using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+            {
+                // Set the private key of the algorithm   
+                rsa.FromXmlString(privateKey);
+                decryptedData = rsa.Decrypt(dataToDecrypt, false);
+            }
+
+            // Get the string value from the decryptedData byte array   
+            UnicodeEncoding byteConverter = new UnicodeEncoding();
+            return byteConverter.GetString(decryptedData);
         }
     }
 }
