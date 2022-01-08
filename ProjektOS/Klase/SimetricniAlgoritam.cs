@@ -72,7 +72,7 @@ namespace ProjektOS.Klase
             } 
             catch
             {
-                System.Windows.Forms.MessageBox.Show("Krivi algoritam.");
+                System.Windows.Forms.MessageBox.Show("Enkriptirani tekst se nemože dekriptirati označenim algoritmom.");
             }
                 
             return plaintext;
