@@ -10,50 +10,40 @@ namespace ProjektOS.Klase
 {
     public class AsimetricniAlgoritam
     {
-        public static byte[] EncryptText(string publicKey, string text)
+        public static byte[] Enkriptiraj(string javniKljuc, string sadrzaj)
         {
-            // Convert the text to an array of bytes   
             UnicodeEncoding byteConverter = new UnicodeEncoding();
-            byte[] dataToEncrypt = byteConverter.GetBytes(text);
+            byte[] dataToEncrypt = byteConverter.GetBytes(sadrzaj);
 
-            // Create a byte array to store the encrypted data in it   
             byte[] encryptedData;
             using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
             {
-                // Set the rsa pulic key   
-                rsa.FromXmlString(publicKey);
-
-                // Encrypt the data and store it in the encyptedData Array   
+                rsa.FromXmlString(javniKljuc);
                 encryptedData = rsa.Encrypt(dataToEncrypt, false);
             }
 
-            // Save the encypted data array into a file   
             return encryptedData;
         }
 
-        public static string DecryptData(string privateKey, string text)
+        public static string Dekriptiraj(string privatniKljuc, string sadrzaj)
         {
             try
             {
-                // read the encrypted bytes from the file   
-                byte[] dataToDecrypt = Convert.FromBase64String(text);
+                byte[] dataToDecrypt = Convert.FromBase64String(sadrzaj);
 
-                // Create an array to store the decrypted data in it   
                 byte[] decryptedData;
                 using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
                 {
-                    // Set the private key of the algorithm   
-                    rsa.FromXmlString(privateKey);
+                    rsa.FromXmlString(privatniKljuc);
                     decryptedData = rsa.Decrypt(dataToDecrypt, false);
                 }
 
-                // Get the string value from the decryptedData byte array   
                 UnicodeEncoding byteConverter = new UnicodeEncoding();
                 return byteConverter.GetString(decryptedData);
             } 
             catch
             {
-                System.Windows.Forms.MessageBox.Show("Krivi algoritam.");
+                System.Windows.Forms.MessageBox.Show("Enkriptirani tekst se nemože dekriptirati označenim algoritmom.");
                 return null;
             }
         }

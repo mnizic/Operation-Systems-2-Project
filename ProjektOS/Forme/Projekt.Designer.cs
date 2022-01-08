@@ -41,6 +41,10 @@ namespace ProjektOS
             this.sazetakTextBox = new System.Windows.Forms.TextBox();
             this.otvoriKriptiraniTekst = new System.Windows.Forms.Button();
             this.ocistiButton = new System.Windows.Forms.Button();
+            this.hashButton = new System.Windows.Forms.Button();
+            this.digitalniPotpisTextBox = new System.Windows.Forms.TextBox();
+            this.digitalniPotpisButton = new System.Windows.Forms.Button();
+            this.provjeraButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // stvoriNovuDatotekuButton
@@ -160,11 +164,54 @@ namespace ProjektOS
             this.ocistiButton.UseVisualStyleBackColor = true;
             this.ocistiButton.Click += new System.EventHandler(this.ocistiButton_Click);
             // 
+            // hashButton
+            // 
+            this.hashButton.Location = new System.Drawing.Point(766, 50);
+            this.hashButton.Name = "hashButton";
+            this.hashButton.Size = new System.Drawing.Size(130, 36);
+            this.hashButton.TabIndex = 12;
+            this.hashButton.Text = "Hash";
+            this.hashButton.UseVisualStyleBackColor = true;
+            this.hashButton.Click += new System.EventHandler(this.hashButton_Click);
+            // 
+            // digitalniPotpisTextBox
+            // 
+            this.digitalniPotpisTextBox.Enabled = false;
+            this.digitalniPotpisTextBox.Location = new System.Drawing.Point(527, 107);
+            this.digitalniPotpisTextBox.Multiline = true;
+            this.digitalniPotpisTextBox.Name = "digitalniPotpisTextBox";
+            this.digitalniPotpisTextBox.Size = new System.Drawing.Size(365, 101);
+            this.digitalniPotpisTextBox.TabIndex = 13;
+            // 
+            // digitalniPotpisButton
+            // 
+            this.digitalniPotpisButton.Location = new System.Drawing.Point(762, 214);
+            this.digitalniPotpisButton.Name = "digitalniPotpisButton";
+            this.digitalniPotpisButton.Size = new System.Drawing.Size(130, 36);
+            this.digitalniPotpisButton.TabIndex = 14;
+            this.digitalniPotpisButton.Text = "Digitalni potpis";
+            this.digitalniPotpisButton.UseVisualStyleBackColor = true;
+            this.digitalniPotpisButton.Click += new System.EventHandler(this.digitalniPotpisButton_Click);
+            // 
+            // provjeraButton
+            // 
+            this.provjeraButton.Location = new System.Drawing.Point(762, 256);
+            this.provjeraButton.Name = "provjeraButton";
+            this.provjeraButton.Size = new System.Drawing.Size(130, 36);
+            this.provjeraButton.TabIndex = 15;
+            this.provjeraButton.Text = "Provjera";
+            this.provjeraButton.UseVisualStyleBackColor = true;
+            this.provjeraButton.Click += new System.EventHandler(this.provjeraButton_Click);
+            // 
             // Projekt
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(904, 450);
+            this.Controls.Add(this.provjeraButton);
+            this.Controls.Add(this.digitalniPotpisButton);
+            this.Controls.Add(this.digitalniPotpisTextBox);
+            this.Controls.Add(this.hashButton);
             this.Controls.Add(this.ocistiButton);
             this.Controls.Add(this.otvoriKriptiraniTekst);
             this.Controls.Add(this.sazetakTextBox);
@@ -199,6 +246,10 @@ namespace ProjektOS
         private System.Windows.Forms.TextBox sazetakTextBox;
         private System.Windows.Forms.Button otvoriKriptiraniTekst;
         private System.Windows.Forms.Button ocistiButton;
+        private System.Windows.Forms.Button hashButton;
+        private System.Windows.Forms.TextBox digitalniPotpisTextBox;
+        private System.Windows.Forms.Button digitalniPotpisButton;
+        private System.Windows.Forms.Button provjeraButton;
     }
 }
 

@@ -14,7 +14,7 @@ using System.Windows.Forms;
 namespace ProjektOS
 {
     public partial class Projekt : Form
-    {        
+    {
         public Projekt()
         {
             InitializeComponent();
@@ -46,7 +46,10 @@ namespace ProjektOS
             }
 
             otvoriDatotekuSadrzaj.Text = sadrzaj;
-            string sazetak = IzracunSazetka.ComputeSha256Hash(sadrzaj);
+
+            byte[] sazetakByte = IzracunSazetka.ComputeSha256Hash(sadrzaj);
+
+            string sazetak = string.Concat(sazetakByte.Select(x => x.ToString("x2")));
 
             sazetakTextBox.Text = sazetak;
             string sazetakDatoteka = Directory.GetCurrentDirectory() + @"\sazetak_poruke.txt";
@@ -64,7 +67,7 @@ namespace ProjektOS
         }
         private void enkriptirajButton_Click(object sender, EventArgs e)
         {
-            if(otvoriDatotekuSadrzaj.Text != "")
+            if (otvoriDatotekuSadrzaj.Text != "")
             {
                 enkriptiraniSadrzaj.Clear();
 
@@ -142,41 +145,66 @@ namespace ProjektOS
                         sw.WriteLine(privatniKljuc);
                     }
 
-                    byte[] sadrzaj = AsimetricniAlgoritam.EncryptText(javniKljuc, otvoriDatotekuSadrzaj.Text);
+                    byte[] sadrzaj = AsimetricniAlgoritam.Enkriptiraj(javniKljuc, otvoriDatotekuSadrzaj.Text);
                     enkriptiraniSadrzaj.Text = Convert.ToBase64String(sadrzaj);
+
+                    string spremiEnkriptirano = enkriptiraniSadrzaj.Text.ToString();
+
+                    string enkTekstDatoteka = Directory.GetCurrentDirectory() + @"\kriptirani_tekst.txt";
+
+                    if (File.Exists(enkTekstDatoteka))
+                    {
+                        File.Delete(enkTekstDatoteka);
+                    }
+
+                    using (StreamWriter sw = File.CreateText(enkTekstDatoteka))
+                    {
+                        sw.WriteLine(spremiEnkriptirano);
+                    }
                 }
             }
-            
+            else
+            {
+                MessageBox.Show("Niste otvorili datoteku koju želite enkriptirati ili otvorena datoteka ima prazan sadržaj.");
+            }
+
         }
 
         private void dekriptirajButton_Click(object sender, EventArgs e)
         {
-            if(enkriptiraniSadrzaj.Text != "")
+            if (enkriptiraniSadrzaj.Text != "")
             {
                 dekriptiraniSadrzaj.Clear();
 
                 if (simetricnoRadio.Checked)
                 {
-                    string fileName = Directory.GetCurrentDirectory() + @"\tajni_kljuc.txt";
+                    string nazivDatoteke = Directory.GetCurrentDirectory() + @"\tajni_kljuc.txt";
 
-                    if (!File.Exists(fileName))
+                    if (!File.Exists(nazivDatoteke))
                     {
                         MessageBox.Show("Ne postoji datoteka tajni_kljuc.txt!");
                     }
                     else
                     {
-                        int index = enkriptiraniSadrzaj.Text.IndexOf(":") + 1;
-                        string stringAesIV = enkriptiraniSadrzaj.Text.Substring(index);
-                        byte[] aesIV = Convert.FromBase64String(stringAesIV);
+                        try
+                        {
+                            int index = enkriptiraniSadrzaj.Text.IndexOf(":") + 1;
+                            string stringAesIV = enkriptiraniSadrzaj.Text.Substring(index);
+                            byte[] aesIV = Convert.FromBase64String(stringAesIV);
 
-                        string stringAesKey = File.ReadAllText(fileName);
-                        byte[] aesKey = Convert.FromBase64String(stringAesKey);
+                            string stringAesKljuc = File.ReadAllText(nazivDatoteke);
+                            byte[] aesKljuc = Convert.FromBase64String(stringAesKljuc);
 
-                        string[] cijeliEnkriptiraniTekst = enkriptiraniSadrzaj.Text.Split(' ');
-                        byte[] enkriptiraniTekst = Convert.FromBase64String(cijeliEnkriptiraniTekst[0]);
+                            string[] cijeliEnkriptiraniTekst = enkriptiraniSadrzaj.Text.Split(' ');
+                            byte[] enkriptiraniTekst = Convert.FromBase64String(cijeliEnkriptiraniTekst[0]);
 
+                            dekriptiraniSadrzaj.Text = SimetricniAlgoritam.Dekriptiraj(enkriptiraniTekst, aesKljuc, aesIV);
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Navedeni enkriptirani sadržaj nemoguće je dekriptirati.");
+                        }
 
-                        dekriptiraniSadrzaj.Text = SimetricniAlgoritam.Dekriptiraj(enkriptiraniTekst, aesKey, aesIV);
                     }
                 }
                 else
@@ -189,15 +217,24 @@ namespace ProjektOS
                     }
                     else
                     {
-                        string privatniKljuc = File.ReadAllText(fileName);
+                        try
+                        {
+                            string privatniKljuc = File.ReadAllText(fileName);
+                            string enkriptiraniTekst = enkriptiraniSadrzaj.Text;
 
-                        string enkriptiraniTekst = enkriptiraniSadrzaj.Text;
-
-                        dekriptiraniSadrzaj.Text = AsimetricniAlgoritam.DecryptData(privatniKljuc, enkriptiraniTekst);
+                            dekriptiraniSadrzaj.Text = AsimetricniAlgoritam.Dekriptiraj(privatniKljuc, enkriptiraniTekst);
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Navedeni enkriptirani sadržaj nemoguće je dekriptirati.");
+                        }
                     }
                 }
             }
-            
+            else
+            {
+                MessageBox.Show("Enkriptirani sadržaj je prazan.");
+            }
         }
 
         private void ocistiButton_Click(object sender, EventArgs e)
@@ -226,6 +263,67 @@ namespace ProjektOS
             }
 
             enkriptiraniSadrzaj.Text = sadrzaj;
+        }
+
+        private void hashButton_Click(object sender, EventArgs e)
+        {
+            if (otvoriDatotekuSadrzaj.Text != "")
+            {
+                string sadrzaj = otvoriDatotekuSadrzaj.Text.ToString();
+
+                byte[] sazetakByte = IzracunSazetka.ComputeSha256Hash(sadrzaj);
+
+                string sazetak = string.Concat(sazetakByte.Select(x => x.ToString("x2")));
+
+                sazetakTextBox.Text = sazetak;
+                string sazetakDatoteka = Directory.GetCurrentDirectory() + @"\sazetak_poruke.txt";
+
+                if (File.Exists(sazetakDatoteka))
+                {
+                    File.Delete(sazetakDatoteka);
+                }
+
+                using (StreamWriter sw = File.CreateText(sazetakDatoteka))
+                {
+                    sw.WriteLine(sazetak);
+                }
+            }
+        }
+
+        private void digitalniPotpisButton_Click(object sender, EventArgs e)
+        {
+            if (otvoriDatotekuSadrzaj.Text != "")
+            {
+                string sadrzaj = otvoriDatotekuSadrzaj.Text;
+                byte[] digitalniPotpisByte = DigitalniPotpis.GenerirajPotpis(sadrzaj);
+
+                string digitalniPotpis = Convert.ToBase64String(digitalniPotpisByte);
+                digitalniPotpisTextBox.Text = digitalniPotpis;
+
+                string digitalniPotpisDatoteka = Directory.GetCurrentDirectory() + @"\digitalni_potpis.txt";
+
+                if (File.Exists(digitalniPotpisDatoteka))
+                {
+                    File.Delete(digitalniPotpisDatoteka);
+                }
+
+                using (StreamWriter sw = File.CreateText(digitalniPotpisDatoteka))
+                {
+                    sw.WriteLine(digitalniPotpis);
+                }
+            }
+        }
+
+        private void provjeraButton_Click(object sender, EventArgs e)
+        {
+            if (DigitalniPotpis.VerificirajPotpis(otvoriDatotekuSadrzaj.Text.ToString()))
+            {
+                MessageBox.Show("Potpis je validan!");
+            }
+            else
+            {
+                MessageBox.Show("Potpis nije validan!");
+            }
         }
     }
 }
