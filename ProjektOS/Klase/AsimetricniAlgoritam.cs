@@ -33,21 +33,29 @@ namespace ProjektOS.Klase
 
         public static string DecryptData(string privateKey, string text)
         {
-            // read the encrypted bytes from the file   
-            byte[] dataToDecrypt = Convert.FromBase64String(text);
-
-            // Create an array to store the decrypted data in it   
-            byte[] decryptedData;
-            using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+            try
             {
-                // Set the private key of the algorithm   
-                rsa.FromXmlString(privateKey);
-                decryptedData = rsa.Decrypt(dataToDecrypt, false);
-            }
+                // read the encrypted bytes from the file   
+                byte[] dataToDecrypt = Convert.FromBase64String(text);
 
-            // Get the string value from the decryptedData byte array   
-            UnicodeEncoding byteConverter = new UnicodeEncoding();
-            return byteConverter.GetString(decryptedData);
+                // Create an array to store the decrypted data in it   
+                byte[] decryptedData;
+                using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+                {
+                    // Set the private key of the algorithm   
+                    rsa.FromXmlString(privateKey);
+                    decryptedData = rsa.Decrypt(dataToDecrypt, false);
+                }
+
+                // Get the string value from the decryptedData byte array   
+                UnicodeEncoding byteConverter = new UnicodeEncoding();
+                return byteConverter.GetString(decryptedData);
+            } 
+            catch
+            {
+                System.Windows.Forms.MessageBox.Show("Krivi algoritam.");
+                return null;
+            }
         }
     }
 }

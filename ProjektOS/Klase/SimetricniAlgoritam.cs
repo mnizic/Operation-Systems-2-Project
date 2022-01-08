@@ -49,26 +49,32 @@ namespace ProjektOS.Klase
                 throw new ArgumentNullException("IV");
 
             string plaintext = null;
-
-            using (Aes aesAlg = Aes.Create())
+            try
             {
-                aesAlg.Key = Key;
-                aesAlg.IV = IV;
-
-                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
-
-                using (MemoryStream msDecrypt = new MemoryStream(cipherText))
+                using (Aes aesAlg = Aes.Create())
                 {
-                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    aesAlg.Key = Key;
+                    aesAlg.IV = IV;
+
+                    ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+
+                    using (MemoryStream msDecrypt = new MemoryStream(cipherText))
                     {
-                        using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                        using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                         {
-                            plaintext = srDecrypt.ReadToEnd();
+                            using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                            {
+                                plaintext = srDecrypt.ReadToEnd();
+                            }
                         }
                     }
                 }
+            } 
+            catch
+            {
+                System.Windows.Forms.MessageBox.Show("Krivi algoritam.");
             }
-
+                
             return plaintext;
         }
     }

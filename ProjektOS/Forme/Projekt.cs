@@ -199,5 +199,33 @@ namespace ProjektOS
             }
             
         }
+
+        private void ocistiButton_Click(object sender, EventArgs e)
+        {
+            enkriptiraniSadrzaj.Text = "";
+            dekriptiraniSadrzaj.Text = "";
+        }
+
+        private void otvoriKriptiraniTekst_Click(object sender, EventArgs e)
+        {
+            string sadrzaj = String.Empty;
+
+            using (OpenFileDialog dialog = new OpenFileDialog())
+            {
+                dialog.RestoreDirectory = true;
+                dialog.Filter = "Text files (*.txt)|*.txt";
+                dialog.DefaultExt = "txt";
+
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    using (StreamReader reader = new StreamReader(dialog.OpenFile()))
+                    {
+                        sadrzaj = reader.ReadToEnd();
+                    }
+                }
+            }
+
+            enkriptiraniSadrzaj.Text = sadrzaj;
+        }
     }
 }
