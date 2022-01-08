@@ -45,7 +45,7 @@ namespace ProjektOS
                 }
             }
 
-            otvoriDatotekuSadrzaj.Text = sadrzaj;
+            obicanTekstSadrzaj.Text = sadrzaj;
 
             byte[] sazetakByte = IzracunSazetka.ComputeSha256Hash(sadrzaj);
 
@@ -67,7 +67,7 @@ namespace ProjektOS
         }
         private void enkriptirajButton_Click(object sender, EventArgs e)
         {
-            if (otvoriDatotekuSadrzaj.Text != "")
+            if (obicanTekstSadrzaj.Text != "")
             {
                 enkriptiraniSadrzaj.Clear();
 
@@ -96,7 +96,7 @@ namespace ProjektOS
                         sw.WriteLine(kljuc);
                     }
 
-                    byte[] sadrzaj = SimetricniAlgoritam.Enkriptiraj(otvoriDatotekuSadrzaj.Text, aesKey, aesIV);
+                    byte[] sadrzaj = SimetricniAlgoritam.Enkriptiraj(obicanTekstSadrzaj.Text, aesKey, aesIV);
                     enkriptiraniSadrzaj.Text += Convert.ToBase64String(sadrzaj) + " " + Environment.NewLine;
                     enkriptiraniSadrzaj.Text += "Inicijalizacijski Vektor:";
                     enkriptiraniSadrzaj.Text += Convert.ToBase64String(aesIV);
@@ -145,7 +145,7 @@ namespace ProjektOS
                         sw.WriteLine(privatniKljuc);
                     }
 
-                    byte[] sadrzaj = AsimetricniAlgoritam.Enkriptiraj(javniKljuc, otvoriDatotekuSadrzaj.Text);
+                    byte[] sadrzaj = AsimetricniAlgoritam.Enkriptiraj(javniKljuc, obicanTekstSadrzaj.Text);
                     enkriptiraniSadrzaj.Text = Convert.ToBase64String(sadrzaj);
 
                     string spremiEnkriptirano = enkriptiraniSadrzaj.Text.ToString();
@@ -174,7 +174,7 @@ namespace ProjektOS
         {
             if (enkriptiraniSadrzaj.Text != "")
             {
-                dekriptiraniSadrzaj.Clear();
+                obicanTekstSadrzaj.Clear();
 
                 if (simetricnoRadio.Checked)
                 {
@@ -198,11 +198,33 @@ namespace ProjektOS
                             string[] cijeliEnkriptiraniTekst = enkriptiraniSadrzaj.Text.Split(' ');
                             byte[] enkriptiraniTekst = Convert.FromBase64String(cijeliEnkriptiraniTekst[0]);
 
-                            dekriptiraniSadrzaj.Text = SimetricniAlgoritam.Dekriptiraj(enkriptiraniTekst, aesKljuc, aesIV);
+                            obicanTekstSadrzaj.Text = SimetricniAlgoritam.Dekriptiraj(enkriptiraniTekst, aesKljuc, aesIV);
+
+                            if(obicanTekstSadrzaj.Text != "")
+                            {
+                                byte[] sazetakByte = IzracunSazetka.ComputeSha256Hash(obicanTekstSadrzaj.Text);
+
+                                string sazetak = string.Concat(sazetakByte.Select(x => x.ToString("x2")));
+
+                                sazetakTextBox.Text = sazetak;
+                                string sazetakDatoteka = Directory.GetCurrentDirectory() + @"\sazetak_poruke.txt";
+
+
+                                if (File.Exists(sazetakDatoteka))
+                                {
+                                    File.Delete(sazetakDatoteka);
+                                }
+
+                                using (StreamWriter sw = File.CreateText(sazetakDatoteka))
+                                {
+                                    sw.WriteLine(sazetak);
+                                }
+                            }
                         }
                         catch
                         {
                             MessageBox.Show("Navedeni enkriptirani sadržaj nemoguće je dekriptirati.");
+                            sazetakTextBox.Clear();
                         }
 
                     }
@@ -222,11 +244,33 @@ namespace ProjektOS
                             string privatniKljuc = File.ReadAllText(fileName);
                             string enkriptiraniTekst = enkriptiraniSadrzaj.Text;
 
-                            dekriptiraniSadrzaj.Text = AsimetricniAlgoritam.Dekriptiraj(privatniKljuc, enkriptiraniTekst);
+                            obicanTekstSadrzaj.Text = AsimetricniAlgoritam.Dekriptiraj(privatniKljuc, enkriptiraniTekst);
+
+                            if (obicanTekstSadrzaj.Text != "")
+                            {
+                                byte[] sazetakByte = IzracunSazetka.ComputeSha256Hash(obicanTekstSadrzaj.Text);
+
+                                string sazetak = string.Concat(sazetakByte.Select(x => x.ToString("x2")));
+
+                                sazetakTextBox.Text = sazetak;
+                                string sazetakDatoteka = Directory.GetCurrentDirectory() + @"\sazetak_poruke.txt";
+
+
+                                if (File.Exists(sazetakDatoteka))
+                                {
+                                    File.Delete(sazetakDatoteka);
+                                }
+
+                                using (StreamWriter sw = File.CreateText(sazetakDatoteka))
+                                {
+                                    sw.WriteLine(sazetak);
+                                }
+                            }
                         }
                         catch
                         {
                             MessageBox.Show("Navedeni enkriptirani sadržaj nemoguće je dekriptirati.");
+                            sazetakTextBox.Clear();
                         }
                     }
                 }
@@ -239,8 +283,10 @@ namespace ProjektOS
 
         private void ocistiButton_Click(object sender, EventArgs e)
         {
-            enkriptiraniSadrzaj.Text = "";
-            dekriptiraniSadrzaj.Text = "";
+            enkriptiraniSadrzaj.Clear();
+            obicanTekstSadrzaj.Clear();
+            sazetakTextBox.Clear();
+            digitalniPotpisTextBox.Clear();
         }
 
         private void otvoriKriptiraniTekst_Click(object sender, EventArgs e)
@@ -264,12 +310,12 @@ namespace ProjektOS
 
             enkriptiraniSadrzaj.Text = sadrzaj;
         }
-
+    /*
         private void hashButton_Click(object sender, EventArgs e)
         {
-            if (otvoriDatotekuSadrzaj.Text != "")
+            if (obicanTekstSadrzaj.Text != "")
             {
-                string sadrzaj = otvoriDatotekuSadrzaj.Text.ToString();
+                string sadrzaj = obicanTekstSadrzaj.Text.ToString();
 
                 byte[] sazetakByte = IzracunSazetka.ComputeSha256Hash(sadrzaj);
 
@@ -289,12 +335,12 @@ namespace ProjektOS
                 }
             }
         }
-
+    */
         private void digitalniPotpisButton_Click(object sender, EventArgs e)
         {
-            if (otvoriDatotekuSadrzaj.Text != "")
+            if (obicanTekstSadrzaj.Text != "" && sazetakTextBox.Text != "")
             {
-                string sadrzaj = otvoriDatotekuSadrzaj.Text;
+                string sadrzaj = obicanTekstSadrzaj.Text;
                 byte[] digitalniPotpisByte = DigitalniPotpis.GenerirajPotpis(sadrzaj);
 
                 string digitalniPotpis = Convert.ToBase64String(digitalniPotpisByte);
@@ -312,17 +358,28 @@ namespace ProjektOS
                     sw.WriteLine(digitalniPotpis);
                 }
             }
+            else
+            {
+                MessageBox.Show("Običan tekst i sažetak su prazni.");
+            }
         }
 
         private void provjeraButton_Click(object sender, EventArgs e)
         {
-            if (DigitalniPotpis.VerificirajPotpis(otvoriDatotekuSadrzaj.Text.ToString()))
+            if(digitalniPotpisTextBox.Text != "")
             {
-                MessageBox.Show("Potpis je validan!");
+                if (DigitalniPotpis.VerificirajPotpis(obicanTekstSadrzaj.Text.ToString()))
+                {
+                    MessageBox.Show("Potpis je validan!");
+                }
+                else
+                {
+                    MessageBox.Show("Potpis nije validan!");
+                }
             }
             else
             {
-                MessageBox.Show("Potpis nije validan!");
+                MessageBox.Show("Digitalni potpis je prazan.");
             }
         }
     }
