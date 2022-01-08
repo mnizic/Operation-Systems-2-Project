@@ -39,6 +39,8 @@ namespace ProjektOS
             this.enkriptiraniSadrzaj = new System.Windows.Forms.TextBox();
             this.dekriptiraniSadrzaj = new System.Windows.Forms.TextBox();
             this.sazetakTextBox = new System.Windows.Forms.TextBox();
+            this.otvoriKriptiraniTekst = new System.Windows.Forms.Button();
+            this.ocistiButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // stvoriNovuDatotekuButton
@@ -138,11 +140,33 @@ namespace ProjektOS
             this.sazetakTextBox.Size = new System.Drawing.Size(513, 32);
             this.sazetakTextBox.TabIndex = 9;
             // 
+            // otvoriKriptiraniTekst
+            // 
+            this.otvoriKriptiraniTekst.Location = new System.Drawing.Point(383, 106);
+            this.otvoriKriptiraniTekst.Name = "otvoriKriptiraniTekst";
+            this.otvoriKriptiraniTekst.Size = new System.Drawing.Size(130, 48);
+            this.otvoriKriptiraniTekst.TabIndex = 10;
+            this.otvoriKriptiraniTekst.Text = "Otvori kriptiranu datoteku";
+            this.otvoriKriptiraniTekst.UseVisualStyleBackColor = true;
+            this.otvoriKriptiraniTekst.Click += new System.EventHandler(this.otvoriKriptiraniTekst_Click);
+            // 
+            // ocistiButton
+            // 
+            this.ocistiButton.Location = new System.Drawing.Point(383, 160);
+            this.ocistiButton.Name = "ocistiButton";
+            this.ocistiButton.Size = new System.Drawing.Size(130, 48);
+            this.ocistiButton.TabIndex = 11;
+            this.ocistiButton.Text = "Očisti sve";
+            this.ocistiButton.UseVisualStyleBackColor = true;
+            this.ocistiButton.Click += new System.EventHandler(this.ocistiButton_Click);
+            // 
             // Projekt
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(904, 450);
+            this.Controls.Add(this.ocistiButton);
+            this.Controls.Add(this.otvoriKriptiraniTekst);
             this.Controls.Add(this.sazetakTextBox);
             this.Controls.Add(this.dekriptiraniSadrzaj);
             this.Controls.Add(this.enkriptiraniSadrzaj);
@@ -173,6 +197,8 @@ namespace ProjektOS
         private System.Windows.Forms.TextBox enkriptiraniSadrzaj;
         private System.Windows.Forms.TextBox dekriptiraniSadrzaj;
         private System.Windows.Forms.TextBox sazetakTextBox;
+        private System.Windows.Forms.Button otvoriKriptiraniTekst;
+        private System.Windows.Forms.Button ocistiButton;
     }
 }
 
