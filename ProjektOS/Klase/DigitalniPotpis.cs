@@ -20,7 +20,7 @@ namespace ProjektOS.Klase
                 byte[] sazetak = IzracunSazetka.ComputeSha256Hash(sadrzaj);
                 string privatniKljuc = File.ReadAllText(privatniKljucDatoteka);
 
-                using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+                using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(2048))
                 {
                     rsa.FromXmlString(privatniKljuc);
 
@@ -80,7 +80,7 @@ namespace ProjektOS.Klase
             try
             {
                 byte[] digitalniPotpisByte = Convert.FromBase64String(digitalniPotpis);
-                using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+                using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(2048))
                 {
                     rsa.FromXmlString(javniKljuc);
 
