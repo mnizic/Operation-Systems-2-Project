@@ -16,7 +16,7 @@ namespace ProjektOS.Klase
             byte[] dataToEncrypt = byteConverter.GetBytes(sadrzaj);
 
             byte[] encryptedData;
-            using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+            using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(2048))
             {
                 rsa.FromXmlString(javniKljuc);
                 encryptedData = rsa.Encrypt(dataToEncrypt, false);
@@ -32,7 +32,7 @@ namespace ProjektOS.Klase
                 byte[] dataToDecrypt = Convert.FromBase64String(sadrzaj);
 
                 byte[] decryptedData;
-                using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+                using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(2048))
                 {
                     rsa.FromXmlString(privatniKljuc);
                     decryptedData = rsa.Decrypt(dataToDecrypt, false);
@@ -43,7 +43,7 @@ namespace ProjektOS.Klase
             } 
             catch
             {
-                System.Windows.Forms.MessageBox.Show("Enkriptirani tekst se nemože dekriptirati označenim algoritmom.");
+                System.Windows.Forms.MessageBox.Show("Enkriptirani tekst se ne može dekriptirati označenim algoritmom.");
                 return null;
             }
         }
