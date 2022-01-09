@@ -45,25 +45,28 @@ namespace ProjektOS
                 }
             }
 
-            obicanTekstSadrzaj.Text = sadrzaj;
-
-            byte[] sazetakByte = IzracunSazetka.ComputeSha256Hash(sadrzaj);
-
-            string sazetak = string.Concat(sazetakByte.Select(x => x.ToString("x2")));
-
-            sazetakTextBox.Text = sazetak;
-            string sazetakDatoteka = Directory.GetCurrentDirectory() + @"\sazetak_poruke.txt";
-
-
-            if (File.Exists(sazetakDatoteka))
+            if(sadrzaj != "")
             {
-                File.Delete(sazetakDatoteka);
-            }
+                obicanTekstSadrzaj.Text = sadrzaj;
 
-            using (StreamWriter sw = File.CreateText(sazetakDatoteka))
-            {
-                sw.WriteLine(sazetak);
-            }
+                byte[] sazetakByte = IzracunSazetka.ComputeSha256Hash(sadrzaj);
+
+                string sazetak = string.Concat(sazetakByte.Select(x => x.ToString("x2")));
+
+                sazetakTextBox.Text = sazetak;
+                string sazetakDatoteka = Directory.GetCurrentDirectory() + @"\sazetak_poruke.txt";
+
+
+                if (File.Exists(sazetakDatoteka))
+                {
+                    File.Delete(sazetakDatoteka);
+                }
+
+                using (StreamWriter sw = File.CreateText(sazetakDatoteka))
+                {
+                    sw.WriteLine(sazetak);
+                }
+            } 
         }
         private void enkriptirajButton_Click(object sender, EventArgs e)
         {
@@ -117,7 +120,7 @@ namespace ProjektOS
                 }
                 else
                 {
-                    RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+                    RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(2048);
 
                     string javniKljuc = rsa.ToXmlString(false);
                     string javniKljucFile = Directory.GetCurrentDirectory() + @"\javni_kljuc.txt";
