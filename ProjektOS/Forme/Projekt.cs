@@ -50,8 +50,7 @@ namespace ProjektOS
                 obicanTekstSadrzaj.Text = sadrzaj;
 
                 byte[] sazetakByte = IzracunSazetka.ComputeSha256Hash(sadrzaj);
-
-                string sazetak = string.Concat(sazetakByte.Select(x => x.ToString("x2")));
+                string sazetak = Convert.ToBase64String(sazetakByte);
 
                 sazetakTextBox.Text = sazetak;
                 string sazetakDatoteka = Directory.GetCurrentDirectory() + @"\sazetak_poruke.txt";
@@ -68,6 +67,7 @@ namespace ProjektOS
                 }
             } 
         }
+
         private void enkriptirajButton_Click(object sender, EventArgs e)
         {
             if (obicanTekstSadrzaj.Text != "")
@@ -76,18 +76,17 @@ namespace ProjektOS
 
                 if (simetricnoRadio.Checked)
                 {
-                    byte[] aesKey, aesIV;
+                    byte[] aesTajniKljuc, aesIV;
                     using (Aes aes = Aes.Create())
                     {
                         aes.GenerateIV();
                         aes.GenerateKey();
 
                         aesIV = aes.IV;
-                        aesKey = aes.Key;
+                        aesTajniKljuc = aes.Key;
                     }
 
                     string tajniKljucDatoteka = Directory.GetCurrentDirectory() + @"\tajni_kljuc.txt";
-
                     if (File.Exists(tajniKljucDatoteka))
                     {
                         File.Delete(tajniKljucDatoteka);
@@ -95,11 +94,11 @@ namespace ProjektOS
 
                     using (StreamWriter sw = File.CreateText(tajniKljucDatoteka))
                     {
-                        String kljuc = Convert.ToBase64String(aesKey);
+                        String kljuc = Convert.ToBase64String(aesTajniKljuc);
                         sw.WriteLine(kljuc);
                     }
 
-                    byte[] sadrzaj = SimetricniAlgoritam.Enkriptiraj(obicanTekstSadrzaj.Text, aesKey, aesIV);
+                    byte[] sadrzaj = SimetricniAlgoritam.Enkriptiraj(obicanTekstSadrzaj.Text, aesTajniKljuc, aesIV);
                     enkriptiraniSadrzaj.Text += Convert.ToBase64String(sadrzaj) + " " + Environment.NewLine;
                     enkriptiraniSadrzaj.Text += "Inicijalizacijski Vektor:";
                     enkriptiraniSadrzaj.Text += Convert.ToBase64String(aesIV);
@@ -107,7 +106,6 @@ namespace ProjektOS
                     string spremiEnkriptirano = enkriptiraniSadrzaj.Text.ToString();
 
                     string enkTekstDatoteka = Directory.GetCurrentDirectory() + @"\kriptirani_tekst.txt";
-
                     if (File.Exists(enkTekstDatoteka))
                     {
                         File.Delete(enkTekstDatoteka);
@@ -123,21 +121,19 @@ namespace ProjektOS
                     RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(2048);
 
                     string javniKljuc = rsa.ToXmlString(false);
-                    string javniKljucFile = Directory.GetCurrentDirectory() + @"\javni_kljuc.txt";
-
-                    if (File.Exists(javniKljucFile))
+                    string javniKljucDatoteka = Directory.GetCurrentDirectory() + @"\javni_kljuc.txt";
+                    if (File.Exists(javniKljucDatoteka))
                     {
-                        File.Delete(javniKljucFile);
+                        File.Delete(javniKljucDatoteka);
                     }
 
-                    using (StreamWriter sw = File.CreateText(javniKljucFile))
+                    using (StreamWriter sw = File.CreateText(javniKljucDatoteka))
                     {
                         sw.WriteLine(javniKljuc);
                     }
 
                     string privatniKljuc = rsa.ToXmlString(true);
                     string privatniKljucFile = Directory.GetCurrentDirectory() + @"\privatni_kljuc.txt";
-
                     if (File.Exists(privatniKljucFile))
                     {
                         File.Delete(privatniKljucFile);
@@ -181,9 +177,9 @@ namespace ProjektOS
 
                 if (simetricnoRadio.Checked)
                 {
-                    string nazivDatoteke = Directory.GetCurrentDirectory() + @"\tajni_kljuc.txt";
+                    string tajniKljucDatoteka = Directory.GetCurrentDirectory() + @"\tajni_kljuc.txt";
 
-                    if (!File.Exists(nazivDatoteke))
+                    if (!File.Exists(tajniKljucDatoteka))
                     {
                         MessageBox.Show("Ne postoji datoteka tajni_kljuc.txt!");
                     }
@@ -195,7 +191,7 @@ namespace ProjektOS
                             string stringAesIV = enkriptiraniSadrzaj.Text.Substring(index);
                             byte[] aesIV = Convert.FromBase64String(stringAesIV);
 
-                            string stringAesKljuc = File.ReadAllText(nazivDatoteke);
+                            string stringAesKljuc = File.ReadAllText(tajniKljucDatoteka);
                             byte[] aesKljuc = Convert.FromBase64String(stringAesKljuc);
 
                             string[] cijeliEnkriptiraniTekst = enkriptiraniSadrzaj.Text.Split(' ');
@@ -206,13 +202,10 @@ namespace ProjektOS
                             if(obicanTekstSadrzaj.Text != "")
                             {
                                 byte[] sazetakByte = IzracunSazetka.ComputeSha256Hash(obicanTekstSadrzaj.Text);
-
-                                string sazetak = string.Concat(sazetakByte.Select(x => x.ToString("x2")));
-
+                                string sazetak = Convert.ToBase64String(sazetakByte);
                                 sazetakTextBox.Text = sazetak;
+
                                 string sazetakDatoteka = Directory.GetCurrentDirectory() + @"\sazetak_poruke.txt";
-
-
                                 if (File.Exists(sazetakDatoteka))
                                 {
                                     File.Delete(sazetakDatoteka);
@@ -234,9 +227,9 @@ namespace ProjektOS
                 }
                 else
                 {
-                    string fileName = Directory.GetCurrentDirectory() + @"\privatni_kljuc.txt";
+                    string privatniKljucDatoteka = Directory.GetCurrentDirectory() + @"\privatni_kljuc.txt";
 
-                    if (!File.Exists(fileName))
+                    if (!File.Exists(privatniKljucDatoteka))
                     {
                         MessageBox.Show("Ne postoji datoteka privatni_kljuc.txt!");
                     }
@@ -244,7 +237,7 @@ namespace ProjektOS
                     {
                         try
                         {
-                            string privatniKljuc = File.ReadAllText(fileName);
+                            string privatniKljuc = File.ReadAllText(privatniKljucDatoteka);
                             string enkriptiraniTekst = enkriptiraniSadrzaj.Text;
 
                             obicanTekstSadrzaj.Text = AsimetricniAlgoritam.Dekriptiraj(privatniKljuc, enkriptiraniTekst);
@@ -253,11 +246,10 @@ namespace ProjektOS
                             {
                                 byte[] sazetakByte = IzracunSazetka.ComputeSha256Hash(obicanTekstSadrzaj.Text);
 
-                                string sazetak = string.Concat(sazetakByte.Select(x => x.ToString("x2")));
+                                string sazetak = Convert.ToBase64String(sazetakByte);
 
                                 sazetakTextBox.Text = sazetak;
                                 string sazetakDatoteka = Directory.GetCurrentDirectory() + @"\sazetak_poruke.txt";
-
 
                                 if (File.Exists(sazetakDatoteka))
                                 {
@@ -313,32 +305,7 @@ namespace ProjektOS
 
             enkriptiraniSadrzaj.Text = sadrzaj;
         }
-    /*
-        private void hashButton_Click(object sender, EventArgs e)
-        {
-            if (obicanTekstSadrzaj.Text != "")
-            {
-                string sadrzaj = obicanTekstSadrzaj.Text.ToString();
 
-                byte[] sazetakByte = IzracunSazetka.ComputeSha256Hash(sadrzaj);
-
-                string sazetak = string.Concat(sazetakByte.Select(x => x.ToString("x2")));
-
-                sazetakTextBox.Text = sazetak;
-                string sazetakDatoteka = Directory.GetCurrentDirectory() + @"\sazetak_poruke.txt";
-
-                if (File.Exists(sazetakDatoteka))
-                {
-                    File.Delete(sazetakDatoteka);
-                }
-
-                using (StreamWriter sw = File.CreateText(sazetakDatoteka))
-                {
-                    sw.WriteLine(sazetak);
-                }
-            }
-        }
-    */
         private void digitalniPotpisButton_Click(object sender, EventArgs e)
         {
             if (obicanTekstSadrzaj.Text != "" && sazetakTextBox.Text != "")
@@ -371,7 +338,7 @@ namespace ProjektOS
         {
             if(digitalniPotpisTextBox.Text != "")
             {
-                if (DigitalniPotpis.VerificirajPotpis(obicanTekstSadrzaj.Text.ToString()))
+                if (DigitalniPotpis.VerificirajPotpis())
                 {
                     MessageBox.Show("Potpis je validan!");
                 }
