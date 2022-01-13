@@ -13,33 +13,33 @@ namespace ProjektOS.Klase
         public static byte[] Enkriptiraj(string javniKljuc, string sadrzaj)
         {
             UnicodeEncoding byteConverter = new UnicodeEncoding();
-            byte[] dataToEncrypt = byteConverter.GetBytes(sadrzaj);
+            byte[] sadrzajByte = byteConverter.GetBytes(sadrzaj);
 
-            byte[] encryptedData;
+            byte[] enkriptiraniSadrzaj;
             using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(2048))
             {
                 rsa.FromXmlString(javniKljuc);
-                encryptedData = rsa.Encrypt(dataToEncrypt, false);
+                enkriptiraniSadrzaj = rsa.Encrypt(sadrzajByte, false);
             }
 
-            return encryptedData;
+            return enkriptiraniSadrzaj;
         }
 
         public static string Dekriptiraj(string privatniKljuc, string sadrzaj)
         {
             try
             {
-                byte[] dataToDecrypt = Convert.FromBase64String(sadrzaj);
+                byte[] sadrzajByte = Convert.FromBase64String(sadrzaj);
 
-                byte[] decryptedData;
+                byte[] dekriptiraniSadrzaj;
                 using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(2048))
                 {
                     rsa.FromXmlString(privatniKljuc);
-                    decryptedData = rsa.Decrypt(dataToDecrypt, false);
+                    dekriptiraniSadrzaj = rsa.Decrypt(sadrzajByte, false);
                 }
 
                 UnicodeEncoding byteConverter = new UnicodeEncoding();
-                return byteConverter.GetString(decryptedData);
+                return byteConverter.GetString(dekriptiraniSadrzaj);
             } 
             catch
             {
