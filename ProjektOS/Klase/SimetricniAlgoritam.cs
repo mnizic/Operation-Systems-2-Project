@@ -6,22 +6,16 @@ namespace ProjektOS.Klase
 {
     public class SimetricniAlgoritam
     {
-        public static byte[] Enkriptiraj(string plainText, byte[] Key, byte[] IV)
+        public static byte[] Enkriptiraj(string sadrzaj, byte[] aesKljuc, byte[] aesIV)
         {
-            if (plainText == null || plainText.Length <= 0)
-                throw new ArgumentNullException("plainText");
-            if (Key == null || Key.Length <= 0)
-                throw new ArgumentNullException("Key");
-            if (IV == null || IV.Length <= 0)
-                throw new ArgumentNullException("IV");
-            byte[] encrypted;
+            byte[] enkriptiraniSadrzaj;
 
-            using (Aes aesAlg = Aes.Create())
+            using (Aes aes = Aes.Create())
             {
-                aesAlg.Key = Key;
-                aesAlg.IV = IV;
+                aes.Key = aesKljuc;
+                aes.IV = aesIV;
 
-                ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
                 using (MemoryStream msEncrypt = new MemoryStream())
                 {
@@ -29,42 +23,35 @@ namespace ProjektOS.Klase
                     {
                         using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
                         {
-                            swEncrypt.Write(plainText);
+                            swEncrypt.Write(sadrzaj);
                         }
-                        encrypted = msEncrypt.ToArray();
+                        enkriptiraniSadrzaj = msEncrypt.ToArray();
                     }
                 }
             }
 
-            return encrypted;
+            return enkriptiraniSadrzaj;
         }
 
-        public static string Dekriptiraj(byte[] cipherText, byte[] Key, byte[] IV)
+        public static string Dekriptiraj(byte[] enkriptiraniSadrzaj, byte[] aesKljuc, byte[] aesIV)
         {
-            if (cipherText == null || cipherText.Length <= 0)
-                throw new ArgumentNullException("cipherText");
-            if (Key == null || Key.Length <= 0)
-                throw new ArgumentNullException("Key");
-            if (IV == null || IV.Length <= 0)
-                throw new ArgumentNullException("IV");
-
-            string plaintext = null;
+            string sadrzaj = null;
             try
             {
-                using (Aes aesAlg = Aes.Create())
+                using (Aes aes = Aes.Create())
                 {
-                    aesAlg.Key = Key;
-                    aesAlg.IV = IV;
+                    aes.Key = aesKljuc;
+                    aes.IV = aesIV;
 
-                    ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+                    ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
-                    using (MemoryStream msDecrypt = new MemoryStream(cipherText))
+                    using (MemoryStream msDecrypt = new MemoryStream(enkriptiraniSadrzaj))
                     {
                         using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                         {
                             using (StreamReader srDecrypt = new StreamReader(csDecrypt))
                             {
-                                plaintext = srDecrypt.ReadToEnd();
+                                sadrzaj = srDecrypt.ReadToEnd();
                             }
                         }
                     }
@@ -75,7 +62,7 @@ namespace ProjektOS.Klase
                 System.Windows.Forms.MessageBox.Show("Enkriptirani tekst se ne može dekriptirati označenim algoritmom.");
             }
                 
-            return plaintext;
+            return sadrzaj;
         }
     }
 }
