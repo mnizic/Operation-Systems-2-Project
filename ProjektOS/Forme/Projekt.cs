@@ -18,6 +18,7 @@ namespace ProjektOS
         public Projekt()
         {
             InitializeComponent();
+            provjeraLabel.Visible = false;
         }
 
         private void stvoriNovuDatotekuButton_Click(object sender, EventArgs e)
@@ -45,7 +46,7 @@ namespace ProjektOS
                 }
             }
 
-            if(sadrzaj != "")
+            if(!String.IsNullOrEmpty(sadrzaj))
             {
                 obicanTekstSadrzaj.Text = sadrzaj;
 
@@ -61,16 +62,13 @@ namespace ProjektOS
                     File.Delete(sazetakDatoteka);
                 }
 
-                using (StreamWriter sw = File.CreateText(sazetakDatoteka))
-                {
-                    sw.WriteLine(sazetak);
-                }
+                File.WriteAllText(sazetakDatoteka, sazetak);
             } 
         }
 
         private void enkriptirajButton_Click(object sender, EventArgs e)
         {
-            if (obicanTekstSadrzaj.Text != "")
+            if (!String.IsNullOrEmpty(obicanTekstSadrzaj.Text))
             {
                 enkriptiraniSadrzaj.Clear();
 
@@ -92,11 +90,8 @@ namespace ProjektOS
                         File.Delete(tajniKljucDatoteka);
                     }
 
-                    using (StreamWriter sw = File.CreateText(tajniKljucDatoteka))
-                    {
-                        String kljuc = Convert.ToBase64String(aesTajniKljuc);
-                        sw.WriteLine(kljuc);
-                    }
+                    String kljuc = Convert.ToBase64String(aesTajniKljuc);
+                    File.WriteAllText(tajniKljucDatoteka, kljuc);
 
                     byte[] sadrzaj = SimetricniAlgoritam.Enkriptiraj(obicanTekstSadrzaj.Text, aesTajniKljuc, aesIV);
                     enkriptiraniSadrzaj.Text += Convert.ToBase64String(sadrzaj) + " " + Environment.NewLine;
@@ -111,55 +106,42 @@ namespace ProjektOS
                         File.Delete(enkTekstDatoteka);
                     }
 
-                    using (StreamWriter sw = File.CreateText(enkTekstDatoteka))
-                    {
-                        sw.WriteLine(spremiEnkriptirano);
-                    }
+                    File.WriteAllText(enkTekstDatoteka, spremiEnkriptirano);
                 }
                 else
                 {
                     RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(2048);
 
-                    string javniKljuc = rsa.ToXmlString(false);
                     string javniKljucDatoteka = Directory.GetCurrentDirectory() + @"\javni_kljuc.txt";
                     if (File.Exists(javniKljucDatoteka))
                     {
                         File.Delete(javniKljucDatoteka);
                     }
 
-                    using (StreamWriter sw = File.CreateText(javniKljucDatoteka))
+                    string privatniKljucDatoteka = Directory.GetCurrentDirectory() + @"\privatni_kljuc.txt";
+                    if (File.Exists(privatniKljucDatoteka))
                     {
-                        sw.WriteLine(javniKljuc);
+                        File.Delete(privatniKljucDatoteka);
                     }
-
-                    string privatniKljuc = rsa.ToXmlString(true);
-                    string privatniKljucFile = Directory.GetCurrentDirectory() + @"\privatni_kljuc.txt";
-                    if (File.Exists(privatniKljucFile))
-                    {
-                        File.Delete(privatniKljucFile);
-                    }
-
-                    using (StreamWriter sw = File.CreateText(privatniKljucFile))
-                    {
-                        sw.WriteLine(privatniKljuc);
-                    }
-
-                    byte[] sadrzaj = AsimetricniAlgoritam.Enkriptiraj(javniKljuc, obicanTekstSadrzaj.Text);
-                    enkriptiraniSadrzaj.Text = Convert.ToBase64String(sadrzaj);
-
-                    string spremiEnkriptirano = enkriptiraniSadrzaj.Text.ToString();
 
                     string enkTekstDatoteka = Directory.GetCurrentDirectory() + @"\kriptirani_tekst.txt";
-
                     if (File.Exists(enkTekstDatoteka))
                     {
                         File.Delete(enkTekstDatoteka);
                     }
 
-                    using (StreamWriter sw = File.CreateText(enkTekstDatoteka))
-                    {
-                        sw.WriteLine(spremiEnkriptirano);
-                    }
+
+                    string javniKljuc = rsa.ToXmlString(false);
+                    File.WriteAllText(javniKljucDatoteka, javniKljuc);
+
+                    string privatniKljuc = rsa.ToXmlString(true);
+                    File.WriteAllText(privatniKljucDatoteka, privatniKljuc);
+
+                    byte[] sadrzaj = AsimetricniAlgoritam.Enkriptiraj(javniKljuc, obicanTekstSadrzaj.Text);
+                    enkriptiraniSadrzaj.Text = Convert.ToBase64String(sadrzaj);
+
+                    string spremiEnkriptirano = enkriptiraniSadrzaj.Text.ToString();
+                    File.WriteAllText(enkTekstDatoteka, spremiEnkriptirano);
                 }
             }
             else
@@ -171,7 +153,7 @@ namespace ProjektOS
 
         private void dekriptirajButton_Click(object sender, EventArgs e)
         {
-            if (enkriptiraniSadrzaj.Text != "")
+            if (!String.IsNullOrEmpty(enkriptiraniSadrzaj.Text))
             {
                 obicanTekstSadrzaj.Clear();
 
@@ -187,8 +169,8 @@ namespace ProjektOS
                     {
                         try
                         {
-                            int index = enkriptiraniSadrzaj.Text.IndexOf(":") + 1;
-                            string stringAesIV = enkriptiraniSadrzaj.Text.Substring(index);
+                            int indeks = enkriptiraniSadrzaj.Text.IndexOf(":") + 1;
+                            string stringAesIV = enkriptiraniSadrzaj.Text.Substring(indeks);
                             byte[] aesIV = Convert.FromBase64String(stringAesIV);
 
                             string stringAesKljuc = File.ReadAllText(tajniKljucDatoteka);
@@ -199,7 +181,7 @@ namespace ProjektOS
 
                             obicanTekstSadrzaj.Text = SimetricniAlgoritam.Dekriptiraj(enkriptiraniTekst, aesKljuc, aesIV);
 
-                            if(obicanTekstSadrzaj.Text != "")
+                            if(!String.IsNullOrEmpty(obicanTekstSadrzaj.Text))
                             {
                                 byte[] sazetakByte = IzracunSazetka.ComputeSha256Hash(obicanTekstSadrzaj.Text);
                                 string sazetak = Convert.ToBase64String(sazetakByte);
@@ -211,10 +193,7 @@ namespace ProjektOS
                                     File.Delete(sazetakDatoteka);
                                 }
 
-                                using (StreamWriter sw = File.CreateText(sazetakDatoteka))
-                                {
-                                    sw.WriteLine(sazetak);
-                                }
+                                File.WriteAllText(sazetakDatoteka, sazetak);
                             }
                         }
                         catch
@@ -242,7 +221,7 @@ namespace ProjektOS
 
                             obicanTekstSadrzaj.Text = AsimetricniAlgoritam.Dekriptiraj(privatniKljuc, enkriptiraniTekst);
 
-                            if (obicanTekstSadrzaj.Text != "")
+                            if (!String.IsNullOrEmpty(obicanTekstSadrzaj.Text))
                             {
                                 byte[] sazetakByte = IzracunSazetka.ComputeSha256Hash(obicanTekstSadrzaj.Text);
 
@@ -256,10 +235,7 @@ namespace ProjektOS
                                     File.Delete(sazetakDatoteka);
                                 }
 
-                                using (StreamWriter sw = File.CreateText(sazetakDatoteka))
-                                {
-                                    sw.WriteLine(sazetak);
-                                }
+                                File.WriteAllText(sazetakDatoteka, sazetak);
                             }
                         }
                         catch
@@ -282,6 +258,7 @@ namespace ProjektOS
             obicanTekstSadrzaj.Clear();
             sazetakTextBox.Clear();
             digitalniPotpisTextBox.Clear();
+            provjeraLabel.Visible = false;
         }
 
         private void otvoriKriptiraniTekst_Click(object sender, EventArgs e)
@@ -308,7 +285,9 @@ namespace ProjektOS
 
         private void digitalniPotpisButton_Click(object sender, EventArgs e)
         {
-            if (obicanTekstSadrzaj.Text != "" && sazetakTextBox.Text != "")
+            string privatniKljucDatoteka = Directory.GetCurrentDirectory() + @"\privatni_kljuc.txt";
+
+            if (!String.IsNullOrEmpty(obicanTekstSadrzaj.Text) && !String.IsNullOrEmpty(sazetakTextBox.Text) && File.Exists(privatniKljucDatoteka))
             {
                 string sadrzaj = obicanTekstSadrzaj.Text;
                 byte[] digitalniPotpisByte = DigitalniPotpis.GenerirajPotpis(sadrzaj);
@@ -323,28 +302,31 @@ namespace ProjektOS
                     File.Delete(digitalniPotpisDatoteka);
                 }
 
-                using (StreamWriter sw = File.CreateText(digitalniPotpisDatoteka))
-                {
-                    sw.WriteLine(digitalniPotpis);
-                }
+                File.WriteAllText(digitalniPotpisDatoteka, digitalniPotpis);
             }
             else
             {
-                MessageBox.Show("Običan tekst i sažetak su prazni.");
+                MessageBox.Show("Običan tekst i sažetak su prazni ili privatni_kljuc.txt ne postoji.");
             }
         }
 
         private void provjeraButton_Click(object sender, EventArgs e)
         {
-            if(digitalniPotpisTextBox.Text != "")
+            if(!String.IsNullOrEmpty(digitalniPotpisTextBox.Text))
             {
                 if (DigitalniPotpis.VerificirajPotpis())
-                {
-                    MessageBox.Show("Potpis je validan!");
+                {                    
+                    provjeraLabel.Text = "Digitalni potpis je validan!";
+                    provjeraLabel.Visible = true;
+                    provjeraLabel.ForeColor = Color.ForestGreen;
+                    MessageBox.Show("Digitalni potpis je validan!");
                 }
                 else
-                {
-                    MessageBox.Show("Potpis nije validan!");
+                {                 
+                    provjeraLabel.Text = "Digitalni potpis nije validan!";
+                    provjeraLabel.Visible = true;
+                    provjeraLabel.ForeColor = Color.Red;
+                    MessageBox.Show("Digitalni potpis nije validan!");
                 }
             }
             else
