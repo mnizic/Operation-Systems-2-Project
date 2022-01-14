@@ -15,6 +15,12 @@ namespace ProjektOS.Klase
             UnicodeEncoding byteConverter = new UnicodeEncoding();
             byte[] sadrzajByte = byteConverter.GetBytes(sadrzaj);
 
+            if(sadrzajByte.Length > 256)
+            {
+                System.Windows.Forms.MessageBox.Show("Tekst je predugačak za enkripciju RSA algoritmom.");
+                return null;
+            }
+
             byte[] enkriptiraniSadrzaj;
             using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(2048))
             {
