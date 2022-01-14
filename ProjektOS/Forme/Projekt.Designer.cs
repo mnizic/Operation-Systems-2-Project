@@ -47,6 +47,7 @@ namespace ProjektOS
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.enkriptiraniSadrzaj = new System.Windows.Forms.TextBox();
+            this.provjeraLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // stvoriNovuDatotekuButton
@@ -112,19 +113,19 @@ namespace ProjektOS
             this.dekriptirajButton.UseVisualStyleBackColor = true;
             this.dekriptirajButton.Click += new System.EventHandler(this.dekriptirajButton_Click);
             // 
-            // dekriptiraniSadrzaj
+            // obicanTekstSadrzaj
             // 
             this.obicanTekstSadrzaj.Enabled = false;
             this.obicanTekstSadrzaj.Location = new System.Drawing.Point(12, 106);
             this.obicanTekstSadrzaj.Multiline = true;
-            this.obicanTekstSadrzaj.Name = "dekriptiraniSadrzaj";
-            this.obicanTekstSadrzaj.Size = new System.Drawing.Size(365, 101);
+            this.obicanTekstSadrzaj.Name = "obicanTekstSadrzaj";
+            this.obicanTekstSadrzaj.Size = new System.Drawing.Size(365, 144);
             this.obicanTekstSadrzaj.TabIndex = 8;
             // 
             // sazetakTextBox
             // 
             this.sazetakTextBox.Enabled = false;
-            this.sazetakTextBox.Location = new System.Drawing.Point(256, 291);
+            this.sazetakTextBox.Location = new System.Drawing.Point(15, 291);
             this.sazetakTextBox.Multiline = true;
             this.sazetakTextBox.Name = "sazetakTextBox";
             this.sazetakTextBox.Size = new System.Drawing.Size(513, 32);
@@ -153,15 +154,15 @@ namespace ProjektOS
             // digitalniPotpisTextBox
             // 
             this.digitalniPotpisTextBox.Enabled = false;
-            this.digitalniPotpisTextBox.Location = new System.Drawing.Point(256, 365);
+            this.digitalniPotpisTextBox.Location = new System.Drawing.Point(15, 365);
             this.digitalniPotpisTextBox.Multiline = true;
             this.digitalniPotpisTextBox.Name = "digitalniPotpisTextBox";
-            this.digitalniPotpisTextBox.Size = new System.Drawing.Size(513, 101);
+            this.digitalniPotpisTextBox.Size = new System.Drawing.Size(754, 101);
             this.digitalniPotpisTextBox.TabIndex = 13;
             // 
             // digitalniPotpisButton
             // 
-            this.digitalniPotpisButton.Location = new System.Drawing.Point(256, 472);
+            this.digitalniPotpisButton.Location = new System.Drawing.Point(15, 472);
             this.digitalniPotpisButton.Name = "digitalniPotpisButton";
             this.digitalniPotpisButton.Size = new System.Drawing.Size(130, 36);
             this.digitalniPotpisButton.TabIndex = 14;
@@ -171,7 +172,7 @@ namespace ProjektOS
             // 
             // provjeraButton
             // 
-            this.provjeraButton.Location = new System.Drawing.Point(392, 472);
+            this.provjeraButton.Location = new System.Drawing.Point(151, 472);
             this.provjeraButton.Name = "provjeraButton";
             this.provjeraButton.Size = new System.Drawing.Size(130, 36);
             this.provjeraButton.TabIndex = 15;
@@ -200,7 +201,7 @@ namespace ProjektOS
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(253, 271);
+            this.label4.Location = new System.Drawing.Point(12, 271);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(155, 17);
             this.label4.TabIndex = 19;
@@ -209,7 +210,7 @@ namespace ProjektOS
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(253, 345);
+            this.label5.Location = new System.Drawing.Point(12, 345);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(100, 17);
             this.label5.TabIndex = 20;
@@ -221,14 +222,27 @@ namespace ProjektOS
             this.enkriptiraniSadrzaj.Location = new System.Drawing.Point(638, 106);
             this.enkriptiraniSadrzaj.Multiline = true;
             this.enkriptiraniSadrzaj.Name = "enkriptiraniSadrzaj";
-            this.enkriptiraniSadrzaj.Size = new System.Drawing.Size(365, 101);
+            this.enkriptiraniSadrzaj.Size = new System.Drawing.Size(365, 217);
             this.enkriptiraniSadrzaj.TabIndex = 7;
+            // 
+            // provjeraLabel
+            // 
+            this.provjeraLabel.AutoSize = true;
+            this.provjeraLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.provjeraLabel.ForeColor = System.Drawing.Color.ForestGreen;
+            this.provjeraLabel.Location = new System.Drawing.Point(308, 472);
+            this.provjeraLabel.Name = "provjeraLabel";
+            this.provjeraLabel.Size = new System.Drawing.Size(353, 36);
+            this.provjeraLabel.TabIndex = 21;
+            this.provjeraLabel.Text = "Digitalni potpis je validan!";
+            this.provjeraLabel.Visible = false;
             // 
             // Projekt
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1027, 535);
+            this.Controls.Add(this.provjeraLabel);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -275,6 +289,7 @@ namespace ProjektOS
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox enkriptiraniSadrzaj;
+        private System.Windows.Forms.Label provjeraLabel;
     }
 }
 
