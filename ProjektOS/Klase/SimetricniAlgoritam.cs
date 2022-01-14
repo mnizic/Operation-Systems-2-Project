@@ -12,8 +12,12 @@ namespace ProjektOS.Klase
 
             using (Aes aes = Aes.Create())
             {
+                aes.KeySize = 256;
+                aes.BlockSize = 128;
+                aes.Padding = PaddingMode.PKCS7;
                 aes.Key = aesKljuc;
                 aes.IV = aesIV;
+                
 
                 ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
@@ -35,33 +39,27 @@ namespace ProjektOS.Klase
 
         public static string Dekriptiraj(byte[] enkriptiraniSadrzaj, byte[] aesKljuc, byte[] aesIV)
         {
-            string sadrzaj = null;
-            try
+            string sadrzaj = String.Empty;
+
+            using (Aes aes = Aes.Create())
             {
-                using (Aes aes = Aes.Create())
+                aes.Key = aesKljuc;
+                aes.IV = aesIV;
+
+                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
+                using (MemoryStream msDecrypt = new MemoryStream(enkriptiraniSadrzaj))
                 {
-                    aes.Key = aesKljuc;
-                    aes.IV = aesIV;
-
-                    ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-
-                    using (MemoryStream msDecrypt = new MemoryStream(enkriptiraniSadrzaj))
+                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                     {
-                        using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                        using (StreamReader srDecrypt = new StreamReader(csDecrypt))
                         {
-                            using (StreamReader srDecrypt = new StreamReader(csDecrypt))
-                            {
-                                sadrzaj = srDecrypt.ReadToEnd();
-                            }
+                            sadrzaj = srDecrypt.ReadToEnd();
                         }
                     }
                 }
-            } 
-            catch
-            {
-                System.Windows.Forms.MessageBox.Show("Enkriptirani tekst se ne može dekriptirati označenim algoritmom.");
             }
-                
+            
             return sadrzaj;
         }
     }
