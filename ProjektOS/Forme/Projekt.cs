@@ -77,6 +77,7 @@ namespace ProjektOS
                     byte[] aesTajniKljuc, aesIV;
                     using (Aes aes = Aes.Create())
                     {
+                        aes.KeySize = 256;
                         aes.GenerateIV();
                         aes.GenerateKey();
 
@@ -138,10 +139,12 @@ namespace ProjektOS
                     File.WriteAllText(privatniKljucDatoteka, privatniKljuc);
 
                     byte[] sadrzaj = AsimetricniAlgoritam.Enkriptiraj(javniKljuc, obicanTekstSadrzaj.Text);
-                    enkriptiraniSadrzaj.Text = Convert.ToBase64String(sadrzaj);
-
-                    string spremiEnkriptirano = enkriptiraniSadrzaj.Text.ToString();
-                    File.WriteAllText(enkTekstDatoteka, spremiEnkriptirano);
+                    if (sadrzaj != null)
+                    {
+                        enkriptiraniSadrzaj.Text = Convert.ToBase64String(sadrzaj);
+                        string spremiEnkriptirano = enkriptiraniSadrzaj.Text.ToString();
+                        File.WriteAllText(enkTekstDatoteka, spremiEnkriptirano);
+                    }
                 }
             }
             else
