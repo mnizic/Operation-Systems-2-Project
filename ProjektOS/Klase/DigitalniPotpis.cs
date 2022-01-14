@@ -13,28 +13,40 @@ namespace ProjektOS.Klase
         public static byte[] GenerirajPotpis(string sadrzaj)
         {
             string privatniKljucDatoteka = Directory.GetCurrentDirectory() + @"\privatni_kljuc.txt";
-            byte[] signedHashValue = null;
+            byte[] potpisaniSazetak = null;
 
             if (File.Exists(privatniKljucDatoteka))
             {
                 byte[] sazetak = IzracunSazetka.ComputeSha256Hash(sadrzaj);
                 string privatniKljuc = File.ReadAllText(privatniKljucDatoteka);
 
-                using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+                using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(2048))
                 {
-                    rsa.FromXmlString(privatniKljuc);
+                    try
+                    {
+                        rsa.FromXmlString(privatniKljuc);
 
-                    RSAPKCS1SignatureFormatter rsaFormatter = new RSAPKCS1SignatureFormatter(rsa);
-                    rsaFormatter.SetHashAlgorithm("SHA256");
-                    signedHashValue = rsaFormatter.CreateSignature(sazetak);
+                        RSAPKCS1SignatureFormatter rsaFormatter = new RSAPKCS1SignatureFormatter(rsa);
+                        rsaFormatter.SetHashAlgorithm("SHA256");
+                        potpisaniSazetak = rsaFormatter.CreateSignature(sazetak);
+                    }
+                    catch
+                    {
+                        System.Windows.Forms.MessageBox.Show("Privatni ključ neispravan!");
+                        return null;
+                    }
                 }
             }
-            
-
-            return signedHashValue;
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("Ne postoji datoteka privatni_kljuc.txt");
+                return null;
+            }
+           
+            return potpisaniSazetak;
         } 
 
-        public static bool VerificirajPotpis(string sadrzaj)
+        public static bool VerificirajPotpis()
         {
             bool potpisValidan = false;
 
@@ -44,7 +56,8 @@ namespace ProjektOS.Klase
             if (File.Exists(javniKljucDatoteka))
             {
                 javniKljuc = File.ReadAllText(javniKljucDatoteka);
-            } else
+            } 
+            else
             {
                 return potpisValidan;
             }
@@ -68,19 +81,13 @@ namespace ProjektOS.Klase
             {
                 return potpisValidan;
             }
-            
-            byte[] sazetakByte = IzracunSazetka.ComputeSha256Hash(sadrzaj);
-            string sazetakProvjera = string.Concat(sazetakByte.Select(x => x.ToString("x2")));
-
-            if(sazetakProvjera != sazetak)
-            {
-                return potpisValidan;
-            }
 
             try
             {
+                byte[] sazetakByte = Convert.FromBase64String(sazetak);
                 byte[] digitalniPotpisByte = Convert.FromBase64String(digitalniPotpis);
-                using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+
+                using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(2048))
                 {
                     rsa.FromXmlString(javniKljuc);
 
