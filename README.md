@@ -1,9 +1,7 @@
 # Operation-Systems-2-Project
 Project I made for the course "Operation Systems 2" at Faculty of Organization and Informatics. I used .NET and WinForms to implement the solution.
 
-The task was as follows:
-
-Implement a program that enables:
+The task was to mplement a program that enables:
 
 * Creation and storage of cryptographic keys in the files secret_key.txt, public_key.txt, and private_key.txt
 * Encryption and decryption of the selected file using symmetric and asymmetric algorithms
